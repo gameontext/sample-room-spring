@@ -16,6 +16,7 @@
 
 var websocket = null;
 var websocketUrl = "ws://" + window.document.location.host + "/room";
+var healthUrl = "http://" + window.document.location.host + "/health";
 
 var inputMessage = document.getElementById("inputmessage");
 var connectButton = document.getElementById("connectButton");
@@ -31,6 +32,7 @@ console.log("buttons %o %o %o %o %o %o %o",
   inputMessage, connectButton, disconnectButton, helloButton, goodbyeButton, joinButton, partButton);
 
 document.getElementById("socketUrl").innerHTML = websocketUrl;
+document.getElementById("healthUrl").innerHTML = healthUrl;
 
 function connect() {
   console.log("connect %o", websocket);

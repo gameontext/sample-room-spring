@@ -34,6 +34,7 @@ Game On! communicates with this service (a room) over WebSockets using the [Game
 
 After running this, the server will be running locally at [http://localhost:8080/](http://localhost:8080/).
 * Visiting this page provides a small form you can use to test the WebSocket endpoint in your service directly.
+* A health URL is also defined by the service, at http://localhost:8080/health
 
 ## Make your room public!
 
@@ -44,7 +45,8 @@ For Game On! to include your room, you need to tell it where the publicly reacha
 
 ## Ok. So this thing is running... Now what?
 
-We know, this walkthrough was simple. You have a nice shiny service that emulates async messaging behavior via a WebSocket. So?
+We know, this walkthrough was simple. You have a nice shiny service that has a REST API (/health),
+and emulates async messaging behavior via a WebSocket. So?
 
 The purpose of this text-based adventure is to help you grapple with microservices concepts and technologies
 while building something other than what you do for your day job (it can be easier to learn new things
@@ -61,6 +63,8 @@ Here is a small roadmap to this basic service, so you can go about making it you
 
 * `application.SocketHandler`
    The WebSocket endpoint for the service.
+   
+* `application.HealthEndpoint` Defines the REST endpoint at `/health`.
 
 Things you might try:
 
