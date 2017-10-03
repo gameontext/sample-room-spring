@@ -14,9 +14,7 @@
  * limitations under the License.
  *******************************************************************************/
 
-package application;
-
-import org.springframework.stereotype.Component;
+package app;
 
 import javax.json.*;
 import java.util.Map;
@@ -30,8 +28,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *
  * @see RoomImplementation
  */
-@Component
-class RoomDescription {
+public class RoomDescription {
 
     private final JsonObject EMPTY_COMMANDS = Json.createObjectBuilder().build();
     private final JsonArray EMPTY_INVENTORY = Json.createArrayBuilder().build();
@@ -42,9 +39,6 @@ class RoomDescription {
     private String description = "A room that still has the default description set in the source";
     private JsonObject commandObj = null;
     private JsonArray itemObj = null;
-
-    public RoomDescription() {
-    }
 
     /**
      * @return The room's short name

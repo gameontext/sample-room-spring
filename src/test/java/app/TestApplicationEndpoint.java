@@ -14,23 +14,21 @@
  * limitations under the License.
  *******************************************************************************/
 
-package application;
+package app;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.socket.config.annotation.EnableWebSocket;
-import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
-import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import org.junit.Test;
 
-import javax.inject.Inject;
+import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeNotNull;
 
-@Configuration
-@EnableWebSocket
-class WebSocketConfig implements WebSocketConfigurer {
+public class TestApplicationEndpoint extends EndpointClient {
 
-    @Inject
-    SocketHandler handler;
-
-    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(handler, "/room");
+    @Test
+    public void indexHtml() {
+        String runningInBluemix = System.getProperty("running.bluemix");
+        assumeNotNull(runningInBluemix);
+        assumeFalse(Boolean.valueOf(runningInBluemix));
+        String port = System.getProperty("spring.test.port");
+        testEndpoint("localhost:" + port, "/health", "OK");
     }
 }

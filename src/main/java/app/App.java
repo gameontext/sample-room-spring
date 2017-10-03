@@ -14,19 +14,15 @@
  * limitations under the License.
  *******************************************************************************/
 
-package application;
+package app;
 
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@RestController
-public class HealthEndpoint {
+@SpringBootApplication
+public class App {
 
-    @RequestMapping("health")
-    public @ResponseBody
-    Health health() {
-        return Health.up().build();
+    public static void main(String[] args) {
+        SpringApplication.run(App.class, args);
     }
 }

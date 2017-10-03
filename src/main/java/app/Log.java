@@ -14,7 +14,7 @@
  * limitations under the License.
  *******************************************************************************/
 
-package application;
+package app;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

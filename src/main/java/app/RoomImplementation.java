@@ -14,7 +14,7 @@
  * limitations under the License.
  *******************************************************************************/
 
-package application;
+package app;
 
 import org.springframework.stereotype.Component;
 
@@ -30,22 +30,22 @@ import java.util.logging.Level;
  * payload being sent on the wire.
  */
 @Component
-class RoomImplementation {
+public class RoomImplementation {
 
-    private static final String LOOK_UNKNOWN = "It doesn't look interesting";
-    private static final String UNKNOWN_COMMAND = "This room is a basic model. It doesn't understand `%s`";
-    private static final String UNSPECIFIED_DIRECTION = "You didn't say which way you wanted to go.";
-    private static final String UNKNOWN_DIRECTION = "There isn't a door in that direction (%s)";
-    private static final String GO_FORTH = "You head %s";
-    private static final String HELLO_ALL = "%s is here";
-    private static final String HELLO_USER = "Welcome!";
-    private static final String GOODBYE_ALL = "%s has gone";
-    private static final String GOODBYE_USER = "Bye!";
+    public static final String LOOK_UNKNOWN = "It doesn't look interesting";
+    public static final String UNKNOWN_COMMAND = "This room is a basic model. It doesn't understand `%s`";
+    public static final String UNSPECIFIED_DIRECTION = "You didn't say which way you wanted to go.";
+    public static final String UNKNOWN_DIRECTION = "There isn't a door in that direction (%s)";
+    public static final String GO_FORTH = "You head %s";
+    public static final String HELLO_ALL = "%s is here";
+    public static final String HELLO_USER = "Welcome!";
+    public static final String GOODBYE_ALL = "%s has gone";
+    public static final String GOODBYE_USER = "Bye!";
 
-    private final RoomDescription roomDescription = new RoomDescription();
+    final RoomDescription roomDescription = new RoomDescription();
 
     @PostConstruct
-    protected void postConstruct() {
+    void postConstruct() {
         roomDescription.addCommand("/ping", "Does this work?");
         Log.log(Level.INFO, this, "Room initialized: {0}", roomDescription);
     }
