@@ -23,6 +23,7 @@ import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import javax.inject.Inject;
 import javax.websocket.CloseReason;
 import java.io.Closeable;
 import java.io.IOException;
@@ -32,9 +33,9 @@ import java.util.logging.Level;
 @Component
 class SocketHandler extends TextWebSocketHandler {
 
-    private final RoomImplementation roomImplementation = new RoomImplementation();
-
     private final HashMap<String, WebSocketSession> sessions = new HashMap<>();
+    @Inject
+    private RoomImplementation roomImplementation;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {

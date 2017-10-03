@@ -16,6 +16,10 @@
 
 package application;
 
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.json.JsonObject;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -25,6 +29,7 @@ import java.util.logging.Level;
  * is defined in {@link SocketHandler}, with {@link Message} as the text-based
  * payload being sent on the wire.
  */
+@Component
 class RoomImplementation {
 
     private static final String LOOK_UNKNOWN = "It doesn't look interesting";
@@ -39,9 +44,15 @@ class RoomImplementation {
 
     private final RoomDescription roomDescription = new RoomDescription();
 
-    public RoomImplementation() {
+    @PostConstruct
+    protected void postConstruct() {
         roomDescription.addCommand("/ping", "Does this work?");
         Log.log(Level.INFO, this, "Room initialized: {0}", roomDescription);
+    }
+
+    @PreDestroy
+    protected void preDestroy() {
+        Log.log(Level.FINE, this, "Room to be destroyed");
     }
 
     public void handleMessage(Message message, SocketHandler handler) {
@@ -253,5 +264,4 @@ class RoomImplementation {
                 return exitId;
         }
     }
-
 }

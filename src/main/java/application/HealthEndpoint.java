@@ -29,5 +29,4 @@ public class HealthEndpoint {
     Health health() {
         return Health.up().build();
     }
-
 }

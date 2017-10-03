@@ -21,11 +21,16 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
+import javax.inject.Inject;
+
 @Configuration
 @EnableWebSocket
 class WebSocketConfig implements WebSocketConfigurer {
 
+    @Inject
+    SocketHandler handler;
+
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new SocketHandler(), "/room");
+        registry.addHandler(handler, "/room");
     }
 }

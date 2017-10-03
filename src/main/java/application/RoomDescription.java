@@ -16,6 +16,8 @@
 
 package application;
 
+import org.springframework.stereotype.Component;
+
 import javax.json.*;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +30,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *
  * @see RoomImplementation
  */
+@Component
 class RoomDescription {
 
     private final JsonObject EMPTY_COMMANDS = Json.createObjectBuilder().build();
@@ -101,7 +104,7 @@ class RoomDescription {
             return EMPTY_COMMANDS;
         } else if (obj == null) {
             JsonObjectBuilder newCommandObj = Json.createObjectBuilder();
-            commands.forEach((key, value) -> newCommandObj.add(key, value));
+            commands.forEach(newCommandObj::add);
             obj = commandObj = newCommandObj.build();
         }
 
