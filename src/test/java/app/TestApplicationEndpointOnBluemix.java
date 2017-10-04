@@ -17,10 +17,12 @@
 package app;
 
 import org.junit.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.Assume.assumeNotNull;
 import static org.junit.Assume.assumeTrue;
 
+@SpringBootTest
 public class TestApplicationEndpointOnBluemix extends EndpointClient {
 
     @Test

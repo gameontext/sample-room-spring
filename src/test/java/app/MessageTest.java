@@ -21,10 +21,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+import org.springframework.boot.test.context.SpringBootTest;
 
 /**
  * What goes in, must come out?
  */
+@SpringBootTest
 public class MessageTest {
 
     @Rule

@@ -36,12 +36,25 @@ After running this, the server will be running locally at [http://localhost:8080
 * Visiting this page provides a small form you can use to test the WebSocket endpoint in your service directly.
 * A health URL is also defined by the service, at http://localhost:8080/health
 
+You can also build a Docker image and run the app through there:
+
+1. `mvn install dockerfile:build`
+2. `docker run -p 8080:8080 -t sampleroomspring`
+
+Then the server will be running locally at [http://localhost:8080/](http://localhost:8080/).
+
 ## Make your room public!
 
 For Game On! to include your room, you need to tell it where the publicly reachable WebSocket endpoint is. This usually requires two steps:
 
 * [hosting your service somewhere with a publicly reachable endpoint](https://book.gameontext.org/walkthroughs/deployRoom.html), and then
 * [registering your room with the game](https://book.gameontext.org/walkthroughs/registerRoom.html).
+
+## Build a docker container
+
+Creating a Docker image is straight-up: `docker build .` right from the root menu.
+
+A `docker-compose.yml` file is also there, which can be used to specify overlay volumes to allow local development without restarting the container. See the [Advanced Adventure for local development with Docker](https://book.gameontext.org/walkthroughs/local-docker.html) for a more detailed walkthrough.
 
 ## Ok. So this thing is running... Now what?
 
@@ -65,6 +78,8 @@ Here is a small roadmap to this basic service, so you can go about making it you
    The WebSocket endpoint for the service.
    
 * `app.HealthEndpoint` Defines the REST endpoint at `/health`.
+
+* `src/test` -- Yes! There are tests!
 
 Things you might try:
 
