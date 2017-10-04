@@ -71,7 +71,7 @@ Things you might try:
 * Use RxJava to manage all of the connected WebSockets together as one event stream.
 * Call out to another API (NodeRed integration, Watson API, Weather API) to perform actions in the room.
 * Integrate this room with IFTTT, or Slack, or ...
-* .. other [Advanced Adventures](https://book.gameontext.org/v/walkthrough/walkthroughs/createMore.html)!
+* .. other [Advanced Adventures](https://book.gameontext.org/walkthroughs/createMore.html)!
 
 Remember our https://gameontext.org/#/terms. Most importantly, there are kids around: make your parents proud.
 
