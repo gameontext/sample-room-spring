@@ -14,7 +14,7 @@
  * limitations under the License.
  *******************************************************************************/
 
-package application;
+package app;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.logging.Level;
 
 @Component
-class SocketHandler extends TextWebSocketHandler {
+public class SocketHandler extends TextWebSocketHandler {
 
     private final HashMap<String, WebSocketSession> sessions = new HashMap<>();
     @Inject

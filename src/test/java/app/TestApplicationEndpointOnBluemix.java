@@ -14,15 +14,21 @@
  * limitations under the License.
  *******************************************************************************/
 
-package application;
+package app;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.junit.Test;
 
-@SpringBootApplication
-public class App {
+import static org.junit.Assume.assumeNotNull;
+import static org.junit.Assume.assumeTrue;
 
-    public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
+public class TestApplicationEndpointOnBluemix extends EndpointClient {
+
+    @Test
+    public void indexHtml() {
+        String runningInBluemix = System.getProperty("running.bluemix");
+        assumeNotNull(runningInBluemix);
+        assumeTrue(Boolean.valueOf(runningInBluemix));
+        String context = System.getProperty("cf.context.root");
+        testEndpoint(context, "/health", "OK");
     }
 }

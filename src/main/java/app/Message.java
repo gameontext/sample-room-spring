@@ -14,7 +14,7 @@
  * limitations under the License.
  *******************************************************************************/
 
-package application;
+package app;
 
 import javax.json.*;
 import javax.websocket.DecodeException;

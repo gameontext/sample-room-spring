@@ -1,6 +1,6 @@
 # Game On! Microservices and Spring
 
-[Game On!](https://gameontext.org/) is both a sample microservices application, and a throwback text adventure brought to you by the WASdev team at IBM. This application demonstrates how microservice architectures work from two points of view:
+[Game On!](https://gameontext.org/) is both a sample microservices app, and a throwback text adventure brought to you by the WASdev team at IBM. This app demonstrates how microservice architectures work from two points of view:
 
 1. As a Player: navigate through a network/maze of rooms, and interact with other players and the items or actions available in each room.
 2. As a Developer: extend the game by creating simple services that define rooms. Learn about microservice architectures and their supporting infrastructure as you build and scale your service.
@@ -9,9 +9,9 @@ You can learn more about Game On! at [http://gameontext.org/](http://gameontext.
 
 ## Introduction
 
-This walkthrough will guide you through creating and deploying a simple room (a microservice) to the running Game On! application. This microservice is written in Java as a web application deployed on Spring.
+This walkthrough will guide you through creating and deploying a simple room (a microservice) to the running Game On! app. This microservice is written in Java as a web app deployed on Spring.
 
-The microservice can be (a) deployed as a Cloud Foundry application or (b) built into a docker container.
+The microservice can be (a) deployed as a Cloud Foundry app or (b) built into a docker container.
 
 Game On! communicates with this service (a room) over WebSockets using the [Game On! WebSocket protocol](https://book.gameontext.org/microservices/WebSocketProtocol.html). Consider this a stand-in for asynchronous messaging like MQTT, which requires a lot more setup than a simple WebSocket does.
 
@@ -55,23 +55,23 @@ merrily with your name on it is the beginning of your adventures, rather than th
 
 Here is a small roadmap to this basic service, so you can go about making it your own:
 
-* `application.RoomImplementation`
+* `app.RoomImplementation`
    This class contains the core elements that make your microservice unique from others.
-   Custom commands and items can be added here (via the `application.RoomDescription`
+   Custom commands and items can be added here (via the `app.RoomDescription`
    member variable). The imaginatively named `handleMessage` method, in particular, is called
    when new messages arrive.
 
-* `application.SocketHandler`
+* `app.SocketHandler`
    The WebSocket endpoint for the service.
    
-* `application.HealthEndpoint` Defines the REST endpoint at `/health`.
+* `app.HealthEndpoint` Defines the REST endpoint at `/health`.
 
 Things you might try:
 
 * Use RxJava to manage all of the connected WebSockets together as one event stream.
 * Call out to another API (NodeRed integration, Watson API, Weather API) to perform actions in the room.
 * Integrate this room with IFTTT, or Slack, or ...
-* .. other [Advanced Adventures](https://book.gameontext.org/v/walkthrough/walkthroughs/createMore.html)!
+* .. other [Advanced Adventures](https://book.gameontext.org/walkthroughs/createMore.html)!
 
 Remember our https://gameontext.org/#/terms. Most importantly, there are kids around: make your parents proud.
 
