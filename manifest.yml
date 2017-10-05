@@ -2,9 +2,9 @@
 applications:
 - instances: 1
   timeout: 180
-  name: sampleroomspring962
+  name: sampleroomspring
   buildpack: java_buildpack
-  path: ./target/sampleroomspring962-1.0-SNAPSHOT.jar
+  path: ./target/sampleroomspring-1.0-SNAPSHOT.jar
   memory: 256M
   domain: mybluemix.net
   host: sample-room-spring-962

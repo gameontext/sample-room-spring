@@ -42,7 +42,6 @@ public class EndpointClient {
         System.out.println("Testing " + url);
         WebTarget target = client.target(url);
         Invocation.Builder invoBuild = target.request();
-        Response response = invoBuild.build(requestType).invoke();
-        return response;
+        return invoBuild.build(requestType).invoke();
     }
 }

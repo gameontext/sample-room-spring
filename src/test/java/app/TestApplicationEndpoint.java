@@ -17,10 +17,12 @@
 package app;
 
 import org.junit.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeNotNull;
 
+@SpringBootTest
 public class TestApplicationEndpoint extends EndpointClient {
 
     @Test

@@ -25,12 +25,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.websocket.Session;
 import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(JMockit.class)
+@SpringBootTest
 public class RoomImplementationTest {
 
     public static final String ROOM_ID = "roomId";
