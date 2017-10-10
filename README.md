@@ -93,3 +93,10 @@ Remember our https://gameontext.org/#/terms. Most importantly, there are kids ar
 ## How the build works
 
 This project is built using Maven and makes use of the [Bluemix Developer CLI plugin](https://console.bluemix.net/docs/cloudnative/dev_cli.html#developercli) to integrate with Spring and Bluemix. Visit this [blog post](https://www.ibm.com/blogs/bluemix/2017/09/creating-running-deploying-spring-microservices-5-minutes/) to see how you can use the Bluemix CLI to quickly generate and deploy a Spring microservice.
+
+
+### Code Coverage
+
+The [JaCoCo maven plugin](http://www.eclemma.org/jacoco/trunk/doc/maven.html) is included in the build to generate code coverage reports. It will generate reports in multiple formats (HTML, XML, and CSV) in `target/site/jacoco`.
+
+You can also access code reports on the web at [codecov.io](https://codecov.io) if your project is a public Github project built with Travis. The included `travis.yml` file includes a command to upload the code coverage reports automatically.

@@ -11,6 +11,8 @@
 .DS_Store
 /src/main/resources/application-local.properties
 
+hs_err_pid*
+
 !.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###
