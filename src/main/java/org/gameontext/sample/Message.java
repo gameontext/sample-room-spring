@@ -14,20 +14,29 @@
  * limitations under the License.
  *******************************************************************************/
 
-package app;
+package org.gameontext.sample;
 
-import javax.json.*;
 import javax.websocket.DecodeException;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
+
+import org.gameontext.sample.model.Event;
+import org.gameontext.sample.model.RoomDescription;
+import org.gameontext.sample.model.Views;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Level;
 
 public class Message {
+    private static final Logger logger = LoggerFactory.getLogger(Message.class);
 
     /**
-     * Ack message: this supports both version 1 & 2
-     * {@code ack,{\"version\":[1,2]}}
+     * Ack message: this supports both version 1 & 2 {@code ack,{\"version\":[1,2]}}
      */
     public static final Message ACK_MSG = new Message(Target.ack, "", "{\"version\":[1,2]}");
     /**
@@ -44,8 +53,8 @@ public class Message {
      */
     public static final String CONTENT = "content";
     /**
-     * prefix for bookmark: customize it! Just doing something here to make
-     * it less likely to collide with other rooms.
+     * prefix for bookmark: customize it! Just doing something here to make it less
+     * likely to collide with other rooms.
      */
     private static final String PREFIX = "room-";
     /**
@@ -68,6 +77,9 @@ public class Message {
      * Incrementing message id for bookmark
      */
     private static final AtomicLong bookmark = new AtomicLong(0);
+
+    private static final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
+
     /**
      * Target for the message
      *
@@ -84,8 +96,7 @@ public class Message {
     private final String payload;
 
     /**
-     * Parse a string read from the WebSocket, and convert it into
-     * a message
+     * Parse a string read from the WebSocket, and convert it into a message
      *
      * @param s String read from WebSocket
      * @throws DecodeException
@@ -107,8 +118,7 @@ public class Message {
 
         if (list.isEmpty()) {
             // UMMM. Badness. Bad message. Bad!
-            throw new DecodeException(s,
-                    "Badly formatted payload, unable to target and targetId: \"" + s + "\"");
+            throw new DecodeException(s, "Badly formatted payload, unable to target and targetId: \"" + s + "\"");
         }
 
         // stash all of the rest in the data field.
@@ -140,41 +150,47 @@ public class Message {
      * @return constructed message
      */
     public static Message createSpecificEvent(String userid, String messageForUser) {
-        //  player,<userId>,{
-        //      "type": "event",
-        //      "content": {
-        //          "<userId>": "specific to player"
-        //          },
-        //      "bookmark": "String representing last message seen"
-        //  }
-        JsonObjectBuilder payload = Json.createObjectBuilder();
-        payload.add(TYPE, EVENT);
+        // player,<userId>,{
+        // "type": "event",
+        // "content": {
+        //     "<userId>": "specific to player"
+        // },
+        // "bookmark": "String representing last message seen"
+        // }
+        Event outbound = new Event();
+        outbound.addContent(userid, messageForUser);
+        outbound.setBookmark(PREFIX + bookmark.incrementAndGet());
+        outbound.verify();
 
-        JsonObjectBuilder content = Json.createObjectBuilder();
-        content.add(userid, messageForUser);
-        payload.add(CONTENT, content.build());
+        try {
+            String payload = mapper
+            .writerWithView(Views.Outbound.class)
+            .writeValueAsString(outbound);
 
-        payload.add(BOOKMARK, PREFIX + bookmark.incrementAndGet());
-        return new Message(Target.player, userid, payload.build().toString());
+            return new Message(Target.player, userid, payload);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Unable to marshal outbound event", e);
+        }
     }
 
     /**
-     * Construct an event that broadcasts to all players. The first string will
-     * be the message sent to all players. Additional messages should be specified
-     * in pairs afterwards, "userId1", "player message 1", "userId2", "player message 2".
-     * If the optional specified messages are uneven, only the general message will be sent.
+     * Construct an event that broadcasts to all players. The first string will be
+     * the message sent to all players. Additional messages should be specified in
+     * pairs afterwards, "userId1", "player message 1", "userId2", "player message
+     * 2". If the optional specified messages are uneven, only the general message
+     * will be sent.
      *
      * @return constructed message
      */
     public static Message createBroadcastEvent(String allContent, String... pairs) {
-        //  player,*,{
-        //      "type": "event",
-        //      "content": {
-        //          "*": "general text for everyone",
-        //          "<userId>": "specific to player"
-        //      },
-        //      "bookmark": "String representing last message seen"
-        //  }
+        // player,*,{
+        // "type": "event",
+        // "content": {
+        // "*": "general text for everyone",
+        // "<userId>": "specific to player"
+        // },
+        // "bookmark": "String representing last message seen"
+        // }
         JsonObjectBuilder payload = Json.createObjectBuilder();
         payload.add(TYPE, EVENT);
 
@@ -205,13 +221,12 @@ public class Message {
      * @return constructed message
      */
     public static Message createChatMessage(String username, String message) {
-        //  player,*,{...}
-        //  {
-        //    "type": "chat",
-        //    "username": "username",
-        //    "content": "<message>",
-        //    "bookmark": "String representing last message seen"
-        //  }
+        // player,*,{
+        // "type": "chat",
+        // "username": "username",
+        // "content": "<message>",
+        // "bookmark": "String representing last message seen"
+        // }
 
         JsonObjectBuilder payload = Json.createObjectBuilder();
         payload.add(TYPE, "chat");
@@ -231,39 +246,32 @@ public class Message {
      * @return constructed message
      */
     public static Message createLocationMessage(String userId, RoomDescription roomDescription) {
-        //  player,<userId>,{
-        //      "type": "location",
-        //      "name": "Room name",
-        //      "fullName": "Room's descriptive full name",
-        //      "description", "Lots of text about what the room looks like",
-        //      "exits": {
-        //          "shortDirection" : "currentDescription for Player",
-        //          "N" :  "a dark entranceway"
-        //      },
-        //      "commands": {
-        //          "/custom" : "Description of what command does"
-        //      },
-        //      "roomInventory": ["itemA","itemB"]
-        //  }
-        JsonObjectBuilder payload = Json.createObjectBuilder();
-        payload.add(TYPE, "location");
-        payload.add("name", roomDescription.getName());
-        payload.add("fullName", roomDescription.getFullName());
-        payload.add("description", roomDescription.getDescription());
+        // player,<userId>,{
+        // "type": "location",
+        // "name": "Room name",
+        // "fullName": "Room's descriptive full name",
+        // "description", "Lots of text about what the room looks like",
+        // "exits": {
+        // "shortDirection" : "currentDescription for Player",
+        // "N" : "a dark entranceway"
+        // },
+        // "commands": {
+        // "/custom" : "Description of what command does"
+        // },
+        // "roomInventory": ["itemA","itemB"]
+        // }
 
-        // convert map of commands into JsonObject
-        JsonObject commands = roomDescription.getCommands();
-        if (!commands.isEmpty()) {
-            payload.add("commands", commands);
+        String payload = roomDescription.cachedValue();
+        if ( payload == null ) {
+            try {
+                payload = mapper.writeValueAsString(roomDescription);
+                roomDescription.cache(payload);
+            } catch (JsonProcessingException e) {
+                Log.error(e);
+                throw new RuntimeJsonMappingException("Unable to marshal room description: " + roomDescription);
+            }
         }
-
-        // Convert list of items into json array
-        JsonArray inventory = roomDescription.getInventory();
-        if (!inventory.isEmpty()) {
-            payload.add("roomInventory", inventory);
-        }
-
-        return new Message(Target.player, userId, payload.build().toString());
+        return new Message(Target.player, userId, payload);
     }
 
     /**
@@ -290,12 +298,12 @@ public class Message {
             throw new IllegalArgumentException("exitId is required");
         }
 
-        //  playerLocation,<userId>,{
-        //      "type": "exit",
-        //      "content": "You exit through door xyz... ",
-        //      "exitId": "N"
-        //      "exit": { ... }
-        //  }
+        // playerLocation,<userId>,{
+        // "type": "exit",
+        // "content": "You exit through door xyz... ",
+        // "exitId": "N"
+        // "exit": { ... }
+        // }
         // The exit attribute describes an exit the map service wouldn't know about..
         // This would have to be customized..
 
@@ -317,11 +325,11 @@ public class Message {
      * @return constructed message
      */
     public static Message createRoomMessage(String roomId, String userId, String username, String content) {
-        //  room,<roomId>,{
-        //      "username": "username",
-        //      "userId": "<userId>"
-        //      "content": "<message>"
-        //  }
+        // room,<roomId>,{
+        // "username": "username",
+        // "userId": "<userId>"
+        // "content": "<message>"
+        // }
         JsonObjectBuilder payload = Json.createObjectBuilder();
         payload.add(USER_ID, userId);
         payload.add(USERNAME, username);
@@ -340,11 +348,11 @@ public class Message {
      * @return constructed message
      */
     public static Message createRoomHello(String roomId, String userId, String username, long version) {
-        //  roomHello,<roomId>,{
-        //      "username": "username",
-        //      "userId": "<userId>",
-        //      "version": 1|2
-        //  }
+        // roomHello,<roomId>,{
+        // "username": "username",
+        // "userId": "<userId>",
+        // "version": 1|2
+        // }
         JsonObjectBuilder payload = Json.createObjectBuilder();
         payload.add(USER_ID, userId);
         payload.add(USERNAME, username);
@@ -362,10 +370,10 @@ public class Message {
      * @return constructed message
      */
     public static Message createRoomGoodbye(String roomId, String userId, String username) {
-        //  roomGoodbye,<roomId>,{
-        //      "username": "username",
-        //      "userId": "<userId>"
-        //  }
+        // roomGoodbye,<roomId>,{
+        // "username": "username",
+        // "userId": "<userId>"
+        // }
         JsonObjectBuilder payload = Json.createObjectBuilder();
         payload.add(USER_ID, userId);
         payload.add(USERNAME, username);
@@ -383,11 +391,11 @@ public class Message {
      * @return constructed message
      */
     public static Message createRoomJoin(String roomId, String userId, String username, long version) {
-        //  roomJoin,<roomId>,{
-        //      "username": "username",
-        //      "userId": "<userId>",
-        //      "version": 2
-        //  }
+        // roomJoin,<roomId>,{
+        // "username": "username",
+        // "userId": "<userId>",
+        // "version": 2
+        // }
         JsonObjectBuilder payload = Json.createObjectBuilder();
         payload.add(USER_ID, userId);
         payload.add(USERNAME, username);
@@ -405,10 +413,10 @@ public class Message {
      * @return constructed message
      */
     public static Message createRoomPart(String roomId, String userId, String username) {
-        //  roomPart,<roomId>,{
-        //      "username": "username",
-        //      "userId": "<userId>"
-        //  }
+        // roomPart,<roomId>,{
+        // "username": "username",
+        // "userId": "<userId>"
+        // }
         JsonObjectBuilder payload = Json.createObjectBuilder();
         payload.add(USER_ID, userId);
         payload.add(USERNAME, username);
@@ -418,13 +426,13 @@ public class Message {
 
     /**
      * @return message's target, specifically either:
-     * <ul>
-     * <li>{@link Target#room}</li>
-     * <li>{@link Target#roomHello}</li>
-     * <li>{@link Target#roomGoodbye}</li>
-     * <li>{@link Target#roomJoin}</li>
-     * <li>{@link Target#roomPart}</li>
-     * </ul>
+     *         <ul>
+     *         <li>{@link Target#room}</li>
+     *         <li>{@link Target#roomHello}</li>
+     *         <li>{@link Target#roomGoodbye}</li>
+     *         <li>{@link Target#roomJoin}</li>
+     *         <li>{@link Target#roomPart}</li>
+     *         </ul>
      */
     public Target getTarget() {
         return target;
@@ -489,15 +497,13 @@ public class Message {
         Message other = (Message) obj;
 
         // Private constructor, none of these are ever null.
-        return payload.equals(other.payload)
-                && target.equals(other.target)
-                && targetId.equals(other.targetId);
+        return payload.equals(other.payload) && target.equals(other.target) && targetId.equals(other.targetId);
     }
 
     /**
-     * The first segment in the WebSocket protocol for Game On!
-     * This is used as a primitive routing filter as messages flow through
-     * the system (String.startsWith... )
+     * The first segment in the WebSocket protocol for Game On! This is used as a
+     * primitive routing filter as messages flow through the system
+     * (String.startsWith... )
      */
     public enum Target {
         /**
@@ -509,7 +515,8 @@ public class Message {
          */
         player,
         /**
-         * Message sent to a specific player to trigger a location change (they are allowed to exit the room)
+         * Message sent to a specific player to trigger a location change (they are
+         * allowed to exit the room)
          */
         playerLocation,
         /**

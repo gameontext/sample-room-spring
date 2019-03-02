@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 IBM Corp.
+ * Copyright (c) 2017,2018 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,18 @@
  * limitations under the License.
  *******************************************************************************/
 
-package app;
+package org.gameontext.sample;
 
-import org.junit.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
-import static org.junit.Assume.assumeFalse;
-import static org.junit.Assume.assumeNotNull;
+@Configuration
+@EnableWebSocket
+class WebSocketConfig implements WebSocketConfigurer {
 
-@SpringBootTest
-public class TestApplicationEndpoint extends EndpointClient {
-
-    @Test
-    public void indexHtml() {
-        String runningInBluemix = System.getProperty("running.bluemix");
-        assumeNotNull(runningInBluemix);
-        assumeFalse(Boolean.valueOf(runningInBluemix));
-        String port = System.getProperty("spring.test.port");
-        testEndpoint("localhost:" + port, "/health", "OK");
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        registry.addHandler(new SocketHandler(), "/room");
     }
 }

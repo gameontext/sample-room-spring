@@ -14,23 +14,26 @@
  * limitations under the License.
  *******************************************************************************/
 
-package app;
+package org.gameontext.sample;
 
-import org.springframework.stereotype.Component;
+import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.json.JsonObject;
-import java.util.Locale;
-import java.util.logging.Level;
+
+import org.gameontext.sample.model.RoomDescription;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
- * Here is where your room implementation lives. The WebSocket endpoint
- * is defined in {@link SocketHandler}, with {@link Message} as the text-based
+ * Here is where your room implementation lives. The WebSocket endpoint is
+ * defined in {@link SocketHandler}, with {@link Message} as the text-based
  * payload being sent on the wire.
  */
 @Component
 public class RoomImplementation {
+    private static final Logger logger = LoggerFactory.getLogger(SocketHandler.class);
 
     public static final String LOOK_UNKNOWN = "It doesn't look interesting";
     public static final String UNKNOWN_COMMAND = "This room is a basic model. It doesn't understand `%s`";
@@ -47,12 +50,12 @@ public class RoomImplementation {
     @PostConstruct
     void postConstruct() {
         roomDescription.addCommand("/ping", "Does this work?");
-        Log.log(Level.INFO, this, "Room initialized: {0}", roomDescription);
+        logger.info("Room initialized: {0}", roomDescription);
     }
 
     @PreDestroy
     protected void preDestroy() {
-        Log.log(Level.FINE, this, "Room to be destroyed");
+        logger.debug("Room to be destroyed");
     }
 
     public void handleMessage(Message message, SocketHandler handler) {
@@ -63,7 +66,7 @@ public class RoomImplementation {
         String userId = messageBody.getString(Message.USER_ID);
         String username = messageBody.getString(Message.USERNAME);
 
-        Log.log(Level.FINEST, this, "Received message from {0}({1}): {2}", username, userId, messageBody);
+        logger.trace("Received message from {0}({1}): {2}", username, userId, messageBody);
 
         // Who doesn't love switch on strings in Java 8?
         switch (message.getTarget()) {

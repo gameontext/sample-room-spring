@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 IBM Corp.
+ * Copyright (c) 2018 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+package org.gameontext.sample.model;
 
-package app;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+public class Exit {
 
-@SpringBootApplication
-public class App {
+    @JsonProperty("type")
+    private final String type = "exit";
 
-    public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
+    private String content;
+    private String exitId;
+
+    public String getContent() {
+        return content;
+    }
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getExitId() {
+        return exitId;
+    }
+    public void setExitId(String exitId) {
+        this.exitId = exitId;
+    }
+
+    public void verify() {
+        assert(
+            content != null && !content.isEmpty() &&
+            exitId != null && !exitId.isEmpty());
     }
 }

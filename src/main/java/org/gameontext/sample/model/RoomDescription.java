@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 IBM Corp.
+ * Copyright (c) 2017,2018 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+package org.gameontext.sample.model;
 
-package app;
-
-import javax.json.*;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * This is how our room is described.
@@ -28,17 +31,21 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *
  * @see RoomImplementation
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class RoomDescription {
 
-    private final JsonObject EMPTY_COMMANDS = Json.createObjectBuilder().build();
-    private final JsonArray EMPTY_INVENTORY = Json.createArrayBuilder().build();
-    private final Map<String, String> commands = new ConcurrentHashMap<>();
-    private final Set<String> items = new CopyOnWriteArraySet<>();
+    @JsonProperty("type")
+    private final String type = "location";
+
+    private final Map<String, String> commands = new HashMap<>();
+    private final Set<String> items = new HashSet<>();
     private String name = "defaultRoomNickName";
     private String fullName = "A room with the default fullName still set in the source";
     private String description = "A room that still has the default description set in the source";
-    private JsonObject commandObj = null;
-    private JsonArray itemObj = null;
+
+    @JsonIgnore
+    private volatile String cache = null;
 
     /**
      * @return The room's short name
@@ -86,23 +93,10 @@ public class RoomDescription {
     }
 
     /**
-     * Custom commands are optional. Build/cache/return a JsonObject listing
-     * commands and a description of what they do for use in location messages
-     *
-     * @return JsonObject containing custom room commands. Never null.
+     * Custom commands are optional.
      */
-    public JsonObject getCommands() {
-        JsonObject obj = commandObj;
-
-        if (commands.isEmpty()) {
-            return EMPTY_COMMANDS;
-        } else if (obj == null) {
-            JsonObjectBuilder newCommandObj = Json.createObjectBuilder();
-            commands.forEach(newCommandObj::add);
-            obj = commandObj = newCommandObj.build();
-        }
-
-        return obj;
+    public Map<String, String> getCommands() {
+        return commands;
     }
 
     public void addCommand(String command, String description) {
@@ -110,47 +104,44 @@ public class RoomDescription {
             throw new IllegalArgumentException("description is required");
         }
         commands.put(command, description);
-        commandObj = null;
+        cache = null;
     }
 
     public void removeCommand(String command) {
         commands.remove(command);
-        commandObj = null;
+        cache = null;
     }
 
     /**
-     * Room inventory objects are optional. Build/cache/return a JsonArray listing
-     * items in the room for use in location messages.
-     *
-     * @return JsonArray containing room inventory. Never null
+     * Room inventory objects are optional.
      */
-    public JsonArray getInventory() {
-        JsonArray arr = itemObj;
-
-        if (items.isEmpty()) {
-            return EMPTY_INVENTORY;
-        } else if (arr == null) {
-            JsonArrayBuilder newItemArr = Json.createArrayBuilder();
-            items.forEach(newItemArr::add);
-            arr = itemObj = newItemArr.build();
-        }
-
-        return arr;
+    @JsonProperty("roomInventory")
+    public Set<String> getInventory() {
+        return items;
     }
 
     public void addItem(String itemName) {
         items.add(itemName);
-        itemObj = null;
+        cache = null;
     }
 
     public void removeItem(String itemName) {
         items.remove(itemName);
-        itemObj = null;
+        cache = null;
+    }
+
+    public String cachedValue() {
+        return cache;
+    }
+
+    public void cache(String value) {
+        cache = null;
     }
 
     @Override
     public String toString() {
-        return "name=" + name +
+        return  "type="+ type +
+                ", name=" + name +
                 ", fullName=" + fullName +
                 ", description=" + description +
                 ", commands=" + commands +

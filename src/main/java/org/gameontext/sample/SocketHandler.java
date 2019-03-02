@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 IBM Corp.
+ * Copyright (c) 2017,2018 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,32 @@
  * limitations under the License.
  *******************************************************************************/
 
-package app;
+package org.gameontext.sample;
 
-import org.springframework.stereotype.Component;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketMessage;
-import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.handler.TextWebSocketHandler;
-
-import javax.inject.Inject;
-import javax.websocket.CloseReason;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.logging.Level;
+
+import javax.websocket.CloseReason;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
+
 
 @Component
 public class SocketHandler extends TextWebSocketHandler {
+    private static final Logger logger = LoggerFactory.getLogger(SocketHandler.class);
+
+    @Autowired
+    private RoomImplementation roomImplementation;
 
     private final HashMap<String, WebSocketSession> sessions = new HashMap<>();
-    @Inject
-    private RoomImplementation roomImplementation;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -46,7 +50,7 @@ public class SocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         sessions.remove(session.getId());
-        Log.log(Level.INFO, this, "WebSocketSession with Id (" + session.getId() + ") closed with reason: " + status.getReason());
+        logger.info("WebSocketSession with Id (" + session.getId() + ") closed with reason: " + status.getReason());
     }
 
     /**
@@ -57,7 +61,7 @@ public class SocketHandler extends TextWebSocketHandler {
      * @throws IOException On error
      */
     @Override
-    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
+    public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         roomImplementation.handleMessage(new Message(message.getPayload().toString()), this);
     }
 
@@ -89,7 +93,7 @@ public class SocketHandler extends TextWebSocketHandler {
             session.sendMessage(new TextMessage(message.toString()));
             return true;
         } catch (IOException e) {
-            Log.log(Level.INFO, this, "Exception occurred while sending message: " + e.getLocalizedMessage());
+            logger.info("Exception occurred while sending message: " + e.getLocalizedMessage());
             tryToClose(session, new CloseStatus(CloseReason.CloseCodes.UNEXPECTED_CONDITION.getCode(), trimReason(e.getLocalizedMessage())));
             return false;
         }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 IBM Corp.
+ * Copyright (c) 2018 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+package org.gameontext.sample.model;
 
-package app;
 
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+public class RoomHello extends BasicMessage {
 
-@RestController
-public class HealthEndpoint {
+    private int version = 1;
 
-    @RequestMapping("health")
-    public @ResponseBody
-    Health health() {
-        return Health.up().build();
+    public int getVersion() {
+        return version;
+    }
+    public void setVersion(int version) {
+        this.version = version;
     }
 }

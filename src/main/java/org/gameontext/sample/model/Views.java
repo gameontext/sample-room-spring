@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 IBM Corp.
+ * Copyright (c) 2018 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+package org.gameontext.sample.model;
 
-package app;
+public class Views {
+    public static class Inbound {
+    }
 
-import org.junit.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
-import static org.junit.Assume.assumeNotNull;
-import static org.junit.Assume.assumeTrue;
-
-@SpringBootTest
-public class TestApplicationEndpointOnBluemix extends EndpointClient {
-
-    @Test
-    public void indexHtml() {
-        String runningInBluemix = System.getProperty("running.bluemix");
-        assumeNotNull(runningInBluemix);
-        assumeTrue(Boolean.valueOf(runningInBluemix));
-        String context = System.getProperty("cf.context.root");
-        testEndpoint(context, "/health", "OK");
+    public static class Outbound {
     }
 }
