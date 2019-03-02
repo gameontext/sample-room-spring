@@ -1,10 +1,9 @@
 ---
 applications:
-- instances: 1
-  timeout: 180
-  name: sampleroomspring
-  buildpack: java_buildpack
-  path: ./target/sampleroomspring-1.0-SNAPSHOT.jar
+- name: GameOn Spring Boot 1
   memory: 256M
-  domain: mybluemix.net
-  host: sample-room-spring-962
+  instances: 1
+  random-route: true
+  path: ./target/sampleroomspring-1.0-SNAPSHOT.jar
+  buildpack: java_buildpack
+  timeout: 180
